@@ -142,7 +142,7 @@ class PetkitBLECoordinator(ActiveBluetoothProcessorCoordinator[PetkitBLEData]):
         self._initialization_task = None
         
         # Listen for options updates
-        self.entry.add_update_listener(self.async_options_updated)
+        self._unsub_options_update = self.entry.add_update_listener(self.async_options_updated)
 
     async def async_start(self) -> None:
         """Start the coordinator and immediately initialize connection."""
@@ -328,10 +328,9 @@ class PetkitBLECoordinator(ActiveBluetoothProcessorCoordinator[PetkitBLEData]):
     async def _cleanup(self) -> None:
         """Cleanup resources."""
         # Remove options update listener
-        try:
-            self.entry.async_remove_update_listener(self.async_options_updated)
-        except (ValueError, KeyError):
-            pass  # Listener may not be registered or already removed
+        if getattr(self, "_unsub_options_update", None) is not None:
+            self._unsub_options_update()
+            self._unsub_options_update = None
         
         if self._consumer_task:
             self._consumer_task.cancel()
