@@ -67,7 +67,7 @@ class HABluetoothAdapter:
             for service_info in discovered_devices:
                 if service_info.name and any(
                     device_type in service_info.name 
-                    for device_type in ["W4", "W5", "CTW2"]
+                    for device_type in ["W4", "W5", "CTW2", "CTW3"]
                 ):
                     # Create a mock device object compatible with existing library
                     # Convert service_data to the format expected by the library

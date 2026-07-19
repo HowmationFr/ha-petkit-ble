@@ -300,10 +300,26 @@ class Utils:
             213: {"name": "Petkit_W5N", "alias": "W5N", "product_name": "Eversweet Mini", "device_type": 14, "type_code": 3},
             214: {"name": "Petkit_W4X", "alias": "W4X", "product_name": "Eversweet 3 Pro", "device_type": 14, "type_code": 4},
             217: {"name": "Petkit_CTW2", "alias": "CTW2", "product_name": "Eversweet Solo 2", "device_type": 14, "type_code": 5},
-            228: {"name": "Petkit_W4XUVC", "alias": "W4X", "product_name": "Eversweet 3 Pro (UVC)", "device_type": 14, "type_code": 6}
+            228: {"name": "Petkit_W4XUVC", "alias": "W4X", "product_name": "Eversweet 3 Pro (UVC)", "device_type": 14, "type_code": 6},
+            249: {"name": "Petkit_CTW3UV", "alias": "CTW3", "product_name": "Eversweet MAX (CTW3 UVC)", "device_type": 14, "type_code": 7},
         }
 
-        return device_mapping[device_integer_identifier]
+        props = device_mapping.get(device_integer_identifier)
+        if props is None:
+            import logging
+            logging.getLogger("PetkitW5BLEMQTT").warning(
+                "Unknown Petkit device id %s (likely a CTW3): falling back to a generic CTW profile. "
+                "Add this id to device_mapping for correct labels and calculations.",
+                device_integer_identifier,
+            )
+            props = {
+                "name": f"Petkit_{device_integer_identifier}",
+                "alias": "CTW2",
+                "product_name": f"Eversweet (id {device_integer_identifier})",
+                "device_type": 14,
+                "type_code": 7,
+            }
+        return props
         
     @staticmethod
     def decimal_to_time(decimal_time):
